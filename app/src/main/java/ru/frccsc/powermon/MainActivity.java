@@ -191,7 +191,7 @@ public class MainActivity extends Activity {
     private void Wait(int a) {
         try {
             Thread.sleep(a*1000);
-        } catch (InterruptedException e) {}
+        } catch (InterruptedException ignored) {}
     }
 }
 
