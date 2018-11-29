@@ -32,7 +32,7 @@ public class MainActivity extends Activity {
     SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy ' ' HH:mm:ss");
     TextView textView;
     int chargePlug;
-    boolean usbCharge, usbChargeOldStatus;
+    boolean acCharge, acChargeOldStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +42,7 @@ public class MainActivity extends Activity {
         textView= findViewById(R.id.textView);
         this.registerReceiver(this.BatReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 
-        usbChargeOldStatus = false;
+        acChargeOldStatus = false;
 
         myLogStringPrint(dateFormat.format(new Date().getTime()) + '\n' +"Программа запущена"+'\n' +'\n');
         Wait(5);
@@ -64,11 +64,11 @@ public class MainActivity extends Activity {
 
             while (true) {
 
-                // next check is for test
-                //if (usbCharge) { usbCharge=false; } else{ usbCharge=true; }
+                // uncomment next string for test app at AVD
+                if (acCharge) { acCharge=false; } else{ acCharge=true; }
 
-                if (usbCharge!=usbChargeOldStatus) {
-                    if (usbCharge) {
+                if (acCharge!=acChargeOldStatus) {
+                    if (acCharge) {
                         chargeStatus = "Электричеcтво включено ";
                         timeUSB = new Date().getTime();
                         long diff = timeUSB - timeAC;
@@ -86,7 +86,7 @@ public class MainActivity extends Activity {
                     showToast(status);
                     //smsManager.sendTextMessage("+79680236830", null, smsBody, null, null);
                     //SendEmail(emailBody);
-                    usbChargeOldStatus=usbCharge;
+                    acChargeOldStatus=acCharge;
                 }
                 Wait(10);
             }
@@ -177,7 +177,7 @@ public class MainActivity extends Activity {
         @Override
         public void onReceive(Context ctxt, Intent intent) {
             chargePlug = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0);
-            usbCharge = chargePlug == BATTERY_PLUGGED_USB;
+            acCharge = chargePlug == BATTERY_PLUGGED_AC;
         }
     };
 
