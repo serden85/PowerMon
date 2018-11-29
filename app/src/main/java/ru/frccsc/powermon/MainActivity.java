@@ -24,7 +24,6 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import static android.os.BatteryManager.BATTERY_PLUGGED_AC;
-import static android.os.BatteryManager.BATTERY_PLUGGED_USB;
 
 public class MainActivity extends Activity {
 
