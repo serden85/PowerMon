@@ -10,18 +10,17 @@ import android.os.BatteryManager;
 import android.os.Bundle;
 import android.telephony.SmsManager;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.Properties;
+//import android.widget.Toast;
+/*import java.util.Properties;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMessage;*/
 
 import static android.os.BatteryManager.BATTERY_PLUGGED_AC;
 
@@ -87,7 +86,7 @@ public class MainActivity extends Activity {
 
                     //don't forget to setup right telephone number
                     smsManager.sendTextMessage("+telnum", null, smsBody, null, null);
-                    SendEmail(emailBody);
+                    //SendEmail(emailBody);
                 }
                 if (entryPoint && bataryLevel <= 10) {
                     entryPoint = false;
@@ -100,7 +99,7 @@ public class MainActivity extends Activity {
 
                     //don't forget to setup right telephone number
                     smsManager.sendTextMessage("+telnum", null, smsBody, null, null);
-                    SendEmail(emailBody);
+                    //SendEmail(emailBody);
                 }
                     Wait(10);
             }
@@ -148,7 +147,34 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void SendEmail(String messageBody) {
+    private final BroadcastReceiver BatReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context ctxt, Intent intent) {
+            int chargePlug = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0);
+            acCharge = chargePlug == BATTERY_PLUGGED_AC;
+
+            int level =  intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+            int scale =  intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+            float batteryPct = level/(float) scale;
+            bataryLevel = (int) (batteryPct * 100);
+        }
+    };
+
+    private void Wait(int a) {
+        try {
+            Thread.sleep(a*1000);
+        } catch (InterruptedException ignored) {}
+    }
+
+    /*private void showToast(final String toast) {
+        runOnUiThread(new Runnable() {
+            public void run() {
+                Toast.makeText(MainActivity.this, toast, Toast.LENGTH_LONG).show();
+            }
+        });
+    }*/
+
+    /*private void SendEmail(String messageBody) {
         String to = "power@ipi.ac.ru";
         String from = "PowerMon@ipi.ac.ru";
         Properties properties = System.getProperties();
@@ -159,10 +185,10 @@ public class MainActivity extends Activity {
         Session session = Session.getDefaultInstance(properties);
         try {
             Message message = new MimeMessage(session);
-                message.setFrom(new InternetAddress(from));
-                message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
-                message.setSubject("PowerMon Message");
-                message.setText(messageBody);
+            message.setFrom(new InternetAddress(from));
+            message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+            message.setSubject("PowerMon Message");
+            message.setText(messageBody);
             new SendMailTask().execute(message);
         } catch (MessagingException e) {
             throw new RuntimeException(e);
@@ -188,34 +214,7 @@ public class MainActivity extends Activity {
         {
             super.onPostExecute(aVoid);
         }
-    }
-
-    private final BroadcastReceiver BatReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context ctxt, Intent intent) {
-            int chargePlug = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0);
-            acCharge = chargePlug == BATTERY_PLUGGED_AC;
-
-            int level =  intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-            int scale =  intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-            float batteryPct = level/(float) scale;
-            bataryLevel = (int) (batteryPct * 100);
-        }
-    };
-
-    /*private void showToast(final String toast) {
-        runOnUiThread(new Runnable() {
-            public void run() {
-                Toast.makeText(MainActivity.this, toast, Toast.LENGTH_LONG).show();
-            }
-        });
     }*/
-
-    private void Wait(int a) {
-        try {
-            Thread.sleep(a*1000);
-        } catch (InterruptedException ignored) {}
-    }
 }
 
 
