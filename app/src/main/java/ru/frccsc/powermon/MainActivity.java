@@ -27,11 +27,11 @@ import static android.os.BatteryManager.BATTERY_PLUGGED_AC;
 
 public class MainActivity extends Activity {
 
-    LinkedList<String> myLog = new LinkedList<>();
-    SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy ' ' HH:mm:ss");
-    TextView textView;
-    int chargePlug;
-    boolean acCharge, acChargeOldStatus;
+    private final LinkedList<String> myLog = new LinkedList<>();
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy ' ' HH:mm:ss");
+    private TextView textView;
+    private int bataryLevel;
+    private boolean acCharge, acChargeOldStatus;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,13 +49,14 @@ public class MainActivity extends Activity {
         talk.start();
     }
 
-    public class TalkThread extends Thread {
+    private class TalkThread extends Thread {
         @Override
         public void run() {
-            String chargeStatus, status, smsBody, emailBody;
-            String textViewBody = "";
+            String chargeStatus, smsBody, emailBody;
+            String textViewBody;
+            boolean entryPoint=false;
             SmsManager smsManager = SmsManager.getDefault();
-            long timeUSB, timeAC;
+            long timeAC;
             timeAC = new Date().getTime();
 
             myLogStringPrint(dateFormat.format(new Date().getTime()) + '\n' +"Проверка запущена" + '\n' + '\n');
@@ -64,30 +65,44 @@ public class MainActivity extends Activity {
             while (true) {
 
                 // uncomment next string for test app at AVD
-                if (acCharge) { acCharge=false; } else{ acCharge=true; }
+                //acCharge = !acCharge;
 
                 if (acCharge!=acChargeOldStatus) {
                     if (acCharge) {
                         chargeStatus = "Электричеcтво включено ";
-                        timeUSB = new Date().getTime();
-                        long diff = timeUSB - timeAC;
+                        long diff = new Date().getTime() - timeAC;
                         String diffTime = diffTimeString(diff);
 
-                        smsBody = status = chargeStatus +'\n' + "Время отключения " + diffTime;
-                        textViewBody = status +'\n' +'\n';
-                    } else {
+                        smsBody = emailBody = chargeStatus +'\n' + "Время отключения " + diffTime;
+                        textViewBody = chargeStatus +'\n' + "Время отключения " + diffTime +'\n' +'\n';
+                    }  else {
+                            entryPoint = true;
                         chargeStatus = "Электричеcтво отлючено ";
-                        smsBody = status = chargeStatus;
-                        textViewBody = status +'\n' +'\n';
-                        timeAC = new Date().getTime();
+                        smsBody = emailBody = chargeStatus;
+                        textViewBody = chargeStatus + '\n' + '\n';
+                            timeAC = new Date().getTime();
                     }
-                    myLogStringPrint(dateFormat.format(new Date().getTime()) + '\n' + textViewBody);
-                    showToast(status);
-                    //smsManager.sendTextMessage("+79680236830", null, smsBody, null, null);
-                    //SendEmail(emailBody);
                     acChargeOldStatus=acCharge;
+                    myLogStringPrint(dateFormat.format(new Date().getTime()) + '\n' + textViewBody);
+
+                    //don't forget to setup right telephone number
+                    smsManager.sendTextMessage("+telnum", null, smsBody, null, null);
+                    SendEmail(emailBody);
                 }
-                Wait(10);
+                if (entryPoint && bataryLevel <= 10) {
+                    entryPoint = false;
+                        chargeStatus = "Электричеcтво отлючено ";
+                        smsBody = emailBody = chargeStatus +'\n' + "Заряд < " + bataryLevel + "%";
+                        textViewBody = chargeStatus +'\n' + "Заряд < " + bataryLevel + "%" + '\n' + '\n';
+                    timeAC = new Date().getTime();
+
+                    myLogStringPrint(dateFormat.format(new Date().getTime()) + '\n' + textViewBody);
+
+                    //don't forget to setup right telephone number
+                    smsManager.sendTextMessage("+telnum", null, smsBody, null, null);
+                    SendEmail(emailBody);
+                }
+                    Wait(10);
             }
         }
     }
@@ -99,10 +114,13 @@ public class MainActivity extends Activity {
         long diffDays = diff / (24 * 60 * 60 * 1000);
 
         StringBuilder sb = new StringBuilder();
-        if (diffDays!=0) {sb.append(diffDays + " дней ");}
-        if (diffHours!=0) {sb.append(diffHours + " часов ");}
-        if (diffMinutes!=0) {sb.append(diffMinutes + " минут ");}
-        sb.append(diffSeconds + " секунд");
+        if (diffDays!=0) {
+            sb.append(diffDays).append(" дней ");}
+        if (diffHours!=0) {
+            sb.append(diffHours).append(" часов ");}
+        if (diffMinutes!=0) {
+            sb.append(diffMinutes).append(" минут ");}
+        sb.append(diffSeconds).append(" секунд");
 
     return sb.toString();
     }
@@ -130,12 +148,13 @@ public class MainActivity extends Activity {
         }
     }
 
-    public void SendEmail(String messageBody) {
+    private void SendEmail(String messageBody) {
         String to = "power@ipi.ac.ru";
         String from = "PowerMon@ipi.ac.ru";
         Properties properties = System.getProperties();
-        //properties.setProperty("mail.smtp.host", "83.149.227.82");
-        properties.setProperty("mail.smtp.host", "www.ipi.ac.ru");
+
+        //don't forget to setup right host address
+        properties.setProperty("mail.smtp.host", "host");
         properties.setProperty("mail.smtp.port", "25");
         Session session = Session.getDefaultInstance(properties);
         try {
@@ -150,14 +169,13 @@ public class MainActivity extends Activity {
         }
     }
 
-    private class SendMailTask extends AsyncTask<Message, Void, Void> {
+    private static class SendMailTask extends AsyncTask<Message, Void, Void> {
         @Override
         protected Void doInBackground(javax.mail.Message...  messages)
         {
             try
             {
                 Transport.send(messages[0]);
-                showToast("Message Sent");
             }
             catch (MessagingException e)
             {
@@ -172,21 +190,26 @@ public class MainActivity extends Activity {
         }
     }
 
-    private BroadcastReceiver BatReceiver = new BroadcastReceiver() {
+    private final BroadcastReceiver BatReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context ctxt, Intent intent) {
-            chargePlug = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0);
+            int chargePlug = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0);
             acCharge = chargePlug == BATTERY_PLUGGED_AC;
+
+            int level =  intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+            int scale =  intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+            float batteryPct = level/(float) scale;
+            bataryLevel = (int) (batteryPct * 100);
         }
     };
 
-    private void showToast(final String toast) {
+    /*private void showToast(final String toast) {
         runOnUiThread(new Runnable() {
             public void run() {
                 Toast.makeText(MainActivity.this, toast, Toast.LENGTH_LONG).show();
             }
         });
-    }
+    }*/
 
     private void Wait(int a) {
         try {
