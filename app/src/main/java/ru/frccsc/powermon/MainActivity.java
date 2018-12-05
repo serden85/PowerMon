@@ -133,13 +133,19 @@ public class MainActivity extends Activity {
         myLog.removeFirst();
         myLog.addLast(element);
         }
-        new mytextView().execute(myLog.toString());
+        new mytextView().execute(myLog);
     }
 
-    private class mytextView extends AsyncTask<String, Void, String> {
+    private class mytextView extends AsyncTask<LinkedList, Void, String> {
 
-        protected String doInBackground(String... parametrs) {
-            return parametrs[0];
+        protected String doInBackground(LinkedList... parametrs) {
+            Integer i=0;
+            StringBuilder sb1 = new StringBuilder();
+            while (i < myLog.size()) {
+                sb1.append(parametrs[0].get(i));
+                i++;
+            }
+            return sb1.toString();
         }
 
         protected void onPostExecute(String str){
