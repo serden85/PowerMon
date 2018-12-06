@@ -6,6 +6,7 @@
 
 package ru.frccsc.powermon;
 
+// if you intend to use showToast or SendEmail uncomment some imports
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
