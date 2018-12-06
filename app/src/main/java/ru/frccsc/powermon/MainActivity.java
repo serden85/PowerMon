@@ -93,7 +93,7 @@ public class MainActivity extends Activity {
                     myLogStringPrint(dateFormat.format(new Date().getTime()) + '\n' + textViewBody);
 
                     //don't forget to setup right telephone number
-                    //smsManager.sendTextMessage("+telnum", null, smsBody, null, null);
+                    smsManager.sendTextMessage("+telnum", null, smsBody, null, null);
                     //SendEmail(emailBody);
                 }
                 if (entryPoint && bataryLevel <= 10) {
@@ -106,10 +106,10 @@ public class MainActivity extends Activity {
                     myLogStringPrint(dateFormat.format(new Date().getTime()) + '\n' + textViewBody);
 
                     //don't forget to setup right telephone number
-                    //smsManager.sendTextMessage("+telnum", null, smsBody, null, null);
+                    smsManager.sendTextMessage("+telnum", null, smsBody, null, null);
                     //SendEmail(emailBody);
                 }
-                    Wait(10);
+                    Wait(120);
             }
         }
     }
