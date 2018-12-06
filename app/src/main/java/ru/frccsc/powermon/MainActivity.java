@@ -1,3 +1,9 @@
+/*
+ * Created by Sergey Denisov (serden85@mail.ru)
+ * Copyright (c) 2018 . All rights reserved.
+ * Last modified 06.12.18 11:53
+ */
+
 package ru.frccsc.powermon;
 
 import android.app.Activity;
@@ -13,6 +19,7 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.Locale;
 //import android.widget.Toast;
 /*import java.util.Properties;
 import javax.mail.Message;
@@ -27,7 +34,7 @@ import static android.os.BatteryManager.BATTERY_PLUGGED_AC;
 public class MainActivity extends Activity {
 
     private final LinkedList<String> myLog = new LinkedList<>();
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy ' ' HH:mm:ss");
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy ' ' HH:mm:ss", Locale.US);
     private TextView textView;
     private int bataryLevel;
     private boolean acCharge, acChargeOldStatus;
@@ -85,7 +92,7 @@ public class MainActivity extends Activity {
                     myLogStringPrint(dateFormat.format(new Date().getTime()) + '\n' + textViewBody);
 
                     //don't forget to setup right telephone number
-                    smsManager.sendTextMessage("+telnum", null, smsBody, null, null);
+                    //smsManager.sendTextMessage("+telnum", null, smsBody, null, null);
                     //SendEmail(emailBody);
                 }
                 if (entryPoint && bataryLevel <= 10) {
@@ -98,7 +105,7 @@ public class MainActivity extends Activity {
                     myLogStringPrint(dateFormat.format(new Date().getTime()) + '\n' + textViewBody);
 
                     //don't forget to setup right telephone number
-                    smsManager.sendTextMessage("+telnum", null, smsBody, null, null);
+                    //smsManager.sendTextMessage("+telnum", null, smsBody, null, null);
                     //SendEmail(emailBody);
                 }
                     Wait(10);
