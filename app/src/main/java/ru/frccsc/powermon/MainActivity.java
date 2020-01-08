@@ -12,23 +12,25 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.BatteryManager;
 import android.os.Bundle;
 import android.telephony.SmsManager;
+import android.view.View;
 import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
+import android.widget.Toast;
+import java.util.Properties;
 import java.util.Locale;
-//import android.widget.Toast;
-/*import java.util.Properties;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;*/
+import javax.mail.internet.MimeMessage;
 
 import static android.os.BatteryManager.BATTERY_PLUGGED_AC;
 
@@ -93,8 +95,9 @@ public class MainActivity extends Activity {
                     myLogStringPrint(dateFormat.format(new Date().getTime()) + '\n' + textViewBody);
 
                     //don't forget to setup right telephone number
-                    smsManager.sendTextMessage("+telnum", null, smsBody, null, null);
-                    //SendEmail(emailBody);
+                    //smsManager.sendTextMessage("+telnum", null, smsBody, null, null);
+                    SendEmail(emailBody);
+                    //openWhatsApp(smsBody);
                 }
                 if (entryPoint && bataryLevel <= 10) {
                     entryPoint = false;
@@ -106,10 +109,11 @@ public class MainActivity extends Activity {
                     myLogStringPrint(dateFormat.format(new Date().getTime()) + '\n' + textViewBody);
 
                     //don't forget to setup right telephone number
-                    smsManager.sendTextMessage("+telnum", null, smsBody, null, null);
-                    //SendEmail(emailBody);
+                    //smsManager.sendTextMessage("+telnum", null, smsBody, null, null);
+                    SendEmail(emailBody);
+                    //openWhatsApp(smsBody);
                 }
-                    Wait(120);
+                    Wait(30);
             }
         }
     }
@@ -129,11 +133,10 @@ public class MainActivity extends Activity {
             sb.append(diffMinutes).append(" минут ");}
         sb.append(diffSeconds).append(" секунд");
 
-    return sb.toString();
+        return sb.toString();
     }
 
     private void myLogStringPrint (String element) {
-
         if (myLog.size()<9) {
             myLog.addLast(element);
         }
@@ -145,7 +148,6 @@ public class MainActivity extends Activity {
     }
 
     private class mytextView extends AsyncTask<LinkedList, Void, String> {
-
         protected String doInBackground(LinkedList... parametrs) {
             Integer i=0;
             StringBuilder sb1 = new StringBuilder();
@@ -155,7 +157,6 @@ public class MainActivity extends Activity {
             }
             return sb1.toString();
         }
-
         protected void onPostExecute(String str){
             textView.setText(str);
         }
@@ -188,13 +189,33 @@ public class MainActivity extends Activity {
         });
     }*/
 
-    /*private void SendEmail(String messageBody) {
+    /*public void openWhatsApp(String messageBody){
+        try {
+            String toNumber = "telnum";
+
+            //Intent intent = new Intent(Intent.ACTION_VIEW);
+            //intent.setData(Uri.parse("http://api.whatsapp.com/send?phone="+toNumber +"&text="+messageBody));
+
+            Intent Intent = new Intent(android.content.Intent.ACTION_SEND);
+            Intent.setType("text/plain");
+            Intent.putExtra(Intent.EXTRA_TEXT, messageBody);
+            Intent.putExtra("jid", toNumber + "@s.whatsapp.net");
+            Intent.setPackage("com.whatsapp");
+
+            startActivity(Intent);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }*/
+
+    private void SendEmail(String messageBody) {
         String to = "power@ipi.ac.ru";
         String from = "PowerMon@ipi.ac.ru";
         Properties properties = System.getProperties();
 
         //don't forget to setup right host address
-        properties.setProperty("mail.smtp.host", "host");
+        properties.setProperty("mail.smtp.host", "83.149.227.82");
         properties.setProperty("mail.smtp.port", "25");
         Session session = Session.getDefaultInstance(properties);
         try {
@@ -228,7 +249,7 @@ public class MainActivity extends Activity {
         {
             super.onPostExecute(aVoid);
         }
-    }*/
+    }
 }
 
 
