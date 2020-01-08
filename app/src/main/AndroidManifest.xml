@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Created by Sergey Denisov (serden85@mail.ru)
+  ~ Copyright (c) 2018 . All rights reserved.
+  ~ Last modified 06.12.18 11:53
+  -->
+
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ru.frccsc.powermon">
 
@@ -17,7 +23,7 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
+                <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

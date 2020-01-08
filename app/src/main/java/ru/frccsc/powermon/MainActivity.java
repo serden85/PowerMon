@@ -1,5 +1,12 @@
+/*
+ * Created by Sergey Denisov (serden85@mail.ru)
+ * Copyright (c) 2018 . All rights reserved.
+ * Last modified 06.12.18 11:53
+ */
+
 package ru.frccsc.powermon;
 
+// if you intend to use showToast or SendEmail uncomment some imports
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -17,6 +24,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import android.widget.Toast;
 import java.util.Properties;
+import java.util.Locale;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -29,7 +37,7 @@ import static android.os.BatteryManager.BATTERY_PLUGGED_AC;
 public class MainActivity extends Activity {
 
     private final LinkedList<String> myLog = new LinkedList<>();
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy ' ' HH:mm:ss");
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy ' ' HH:mm:ss", Locale.US);
     private TextView textView;
     private int bataryLevel;
     private boolean acCharge, acChargeOldStatus;
